@@ -1,0 +1,41 @@
+:root {
+    --primary-color: #5c9ce6;
+    --secondary-color: #50e3c2;
+    --accent-color: #f9d423;
+    --text-color: #e0e0e0;
+    --text-secondary: #a0a0a0;
+    --background-color: #1a1a1a;
+    --card-background: #2a2a2a;
+    --border-color: #3a3a3a;
+}
+
+.task-item, .board-task-item, .note-card {
+    background-color: #2a2a2a;
+}
+
+.calendar-day, .calendar-day-header {
+    background-color: #2a2a2a;
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+}
+
+.secondary-btn {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+}
+
+.secondary-btn:hover {
+    background-color: #3a3a3a;
+}
+
+input, select, textarea {
+    background-color: #2a2a2a;
+    color: #e0e0e0;
+    border-color: #3a3a3a;
+}
+
+input:focus, select:focus, textarea:focus {
+    border-color: var(--primary-color);
+}
