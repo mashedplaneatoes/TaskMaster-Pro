@@ -204,5 +204,6 @@ class SettingsManager {
     }
 }
 
-// Initialize settings manager when DOM is loaded
-window.settingsManager = new SettingsManager();
+document.addEventListener('DOMContentLoaded', function() {
+    window.settingsManager = new SettingsManager();
+});
