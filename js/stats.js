@@ -530,8 +530,10 @@ class StatsManager {
     }
 }
 
-// Initialize stats manager when DOM is loaded
-window.statsManager = new StatsManager();
+// In stats.js
+document.addEventListener('DOMContentLoaded', function() {
+    window.statsManager = new StatsManager();
+});
 
 
         
