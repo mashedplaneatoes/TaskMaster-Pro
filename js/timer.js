@@ -421,5 +421,8 @@ class TimerManager {
 }
 
 // Initialize timer manager when DOM is loaded
-window.timerManager = new TimerManager();
+document.addEventListener('DOMContentLoaded', function() {
+    window.timerManager = new TimerManager();
+});
+
 
