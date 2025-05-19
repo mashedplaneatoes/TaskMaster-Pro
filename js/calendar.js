@@ -575,8 +575,10 @@ class CalendarManager {
     }
 }
 
-// Initialize calendar manager when DOM is loaded
-window.calendarManager = new CalendarManager();
+document.addEventListener('DOMContentLoaded', function() {
+    window.calendarManager = new CalendarManager();
+});
+
 
                     
 
