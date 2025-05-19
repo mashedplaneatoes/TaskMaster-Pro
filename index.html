@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusFlow - Minimalist Task & Study Timer</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/themes/light.css" id="theme-stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="logo">FocusFlow</div>
+            <div class="date-time">
+                <div id="current-date"></div>
+                <div id="current-time"></div>
+            </div>
+            <div class="header-controls">
+                <button id="settings-btn" class="icon-btn"><i class="fas fa-cog"></i></button>
+            </div>
+        </header>
+
+        <nav class="sidebar">
+            <ul>
+                <li data-view="tasks" class="active"><i class="fas fa-tasks"></i> Tasks</li>
+                <li data-view="calendar"><i class="fas fa-calendar-alt"></i> Calendar</li>
+                <li data-view="timer"><i class="fas fa-clock"></i> Timer</li>
+                <li data-view="stats"><i class="fas fa-chart-bar"></i> Stats</li>
+                <li data-view="notes"><i class="fas fa-sticky-note"></i> Notes</li>
+            </ul>
+            <div class="progress-container">
+                <p>Today's Progress</p>
+                <div class="progress-bar">
+                    <div class="progress" id="today-progress"></div>
+                </div>
+                <p><span id="completed-tasks">0</span>/<span id="total-tasks">0</span> tasks</p>
+            </div>
+        </nav>
+
+        <main>
+            <div id="tasks-view" class="view active">
+                <div class="view-header">
+                    <h2>Tasks</h2>
+                    <div class="view-controls">
+                        <button id="list-view-btn" class="active"><i class="fas fa-list"></i></button>
+                        <button id="board-view-btn"><i class="fas fa-columns"></i></button>
+                        <button id="add-task-btn"><i class="fas fa-plus"></i> Add Task</button>
+                    </div>
+                </div>
+                
+                <div id="list-view" class="task-container active">
+                    <div class="task-filters">
+                        <select id="filter-label">
+                            <option value="">All Labels</option>
+                        </select>
+                        <select id="filter-priority">
+                            <option value="">All Priorities</option>
+                            <option value="high">High</option>
+                            <option value="medium">Medium</option>
+                            <option value="low">Low</option>
+                        </select>
+                    </div>
+                    <ul id="task-list"></ul>
+                </div>
+                
+                <div id="board-view" class="task-container">
+                    <div class="board-columns">
+                        <div class="board-column" data-status="todo">
+                            <h3>To Do</h3>
+                            <ul class="board-tasks"></ul>
+                        </div>
+                        <div class="board-column" data-status="in-progress">
+                            <h3>In Progress</h3>
+                            <ul class="board-tasks"></ul>
+                        </div>
+                        <div class="board-column" data-status="completed">
+                            <h3>Completed</h3>
+                            <ul class="board-tasks"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="calendar-view" class="view">
+                <div class="view-header">
+                    <h2>Calendar</h2>
+                    <div class="view-controls">
+                        <button id="day-view-btn"><i class="fas fa-calendar-day"></i> Day</button>
+                        <button id="week-view-btn" class="active"><i class="fas fa-calendar-week"></i> Week</button>
+                        <button id="month-view-btn"><i class="fas fa-calendar-alt"></i> Month</button>
+                    </div>
+                </div>
+                <div class="calendar-navigation">
+                    <button id="prev-period"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="calendar-title">June 2023</h3>
+                    <button id="next-period"><i class="fas fa-chevron-right"></i></button>
+                </div>
+                <div id="calendar-container"></div>
+            </div>
+
+            <div id="timer-view" class="view">
+                <div class="view-header">
+                    <h2>Focus Timer</h2>
+                    <div class="view-controls">
+                        <button id="pomodoro-btn" class="active">Pomodoro</button>
+                        <button id="stopwatch-btn">Stopwatch</button>
+                        <button id="countdown-btn">Countdown</button>
+                    </div>
+                </div>
+                
+                <div class="timer-container">
+                    <div class="timer-task-selection">
+                        <select id="timer-task-select">
+                            <option value="">Select a task...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="timer-display">
+                        <div id="timer">25:00</div>
+                        <div class="timer-controls">
+                            <button id="start-timer" class="primary-btn"><i class="fas fa-play"></i> Start</button>
+                            <button id="pause-timer" class="secondary-btn" disabled><i class="fas fa-pause"></i> Pause</button>
+                            <button id="reset-timer" class="secondary-btn" disabled><i class="fas fa-redo"></i> Reset</button>
+                        </div>
+                    </div>
+                    
+                    <div class="timer-settings">
+                        <div id="pomodoro-settings">
+                            <div class="setting-group">
+                                <label>Work Duration (min)</label>
+                                <input type="number" id="pomodoro-work" value="25" min="1" max="60">
+                            </div>
+                            <div class="setting-group">
+                                <label>Break Duration (min)</label>
+                                <input type="number" id="pomodoro-break" value="5" min="1" max="30">
+                            </div>
+                            <div class="setting-group">
+                                <label>Long Break Duration (min)</label>
+                                <input type="number" id="pomodoro-long-break" value="15" min="1" max="60">
+                            </div>
+                            <div class="setting-group">
+                                <label>Sessions before long break</label>
+                                <input type="number" id="pomodoro-sessions" value="4" min="1" max="10">
+                            </div>
+                        </div>
+                        
+                        <div id="countdown-settings" class="hidden">
+                            <div class="setting-group">
+                                <label>Hours</label>
+                                <input type="number" id="countdown-hours" value="0" min="0" max="24">
+                            </div>
+                            <div class="setting-group">
+                                <label>Minutes</label>
+                                <input type="number" id="countdown-minutes" value="25" min="0" max="59">
+                            </div>
+                            <div class="setting-group">
+                                <label>Seconds</label>
+                                <input type="number" id="countdown-seconds" value="0" min="0" max="59">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stats-view" class="view">
+                <div class="view-header">
+                    <h2>Statistics</h2>
+                    <div class="view-controls">
+                        <button id="stats-day-btn" class="active">Day</button>
+                        <button id="stats-week-btn">Week</button>
+                        <button id="stats-month-btn">Month</button>
+                    </div>
+                </div>
+                
+                <div class="stats-container">
+                    <div class="stats-summary">
+                        <div class="stat-card">
+                            <h3>Focus Time</h3>
+                            <p id="focus-time-stat">0h 0m</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Tasks Completed</h3>
+                            <p id="tasks-completed-stat">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Focus Sessions</h3>
+                            <p id="focus-sessions-stat">0</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-chart-container">
+                        <canvas id="stats-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notes-view" class="view">
+                <div class="view-header">
+                    <h2>Notes</h2>
+                    <div class="view-controls">
+                        <button id="add-note-btn"><i class="fas fa-plus"></i> Add Note</button>
+                    </div>
+                </div>
+                
+                <div class="notes-container">
+                    <div id="notes-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="task-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="task-modal-title">Add New Task</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="task-form">
+                    <input type="hidden" id="task-id">
+                    <div class="form-group">
+                        <label for="task-name">Task Name</label>
+                        <input type="text" id="task-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-description">Description</label>
+                        <textarea id="task-description"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-due-date">Due Date</label>
+                            <input type="date" id="task-due-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="task-due-time">Due Time</label>
+                            <input type="time" id="task-due-time">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="task-priority">Priority</label>
+                            <select id="task-priority">
+                                <option value="low">Low</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="task-status">Status</label>
+                            <select id="task-status">
+                                <option value="todo" selected>To Do</option>
+                                <option value="in-progress">In Progress</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-labels">Labels</label>
+                        <div class="labels-container">
+                            <div id="selected-labels"></div>
+                            <input type="text" id="task-labels" placeholder="Add label and press Enter">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="task-color">Color</label>
+                        <input type="color" id="task-color" value="#4a90e2">
+                    </div>
+                    <div class="form-group">
+                        <label for="task-background">Background Image URL</label>
+                        <input type="text" id="task-background" placeholder="Optional background image URL">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancel-task" class="secondary-btn">Cancel</button>
+                        <button type="submit" class="primary-btn">Save Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="note-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="note-modal-title">Add New Note</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="note-form">
+                    <input type="hidden" id="note-id">
+                    <div class="form-group">
+                        <label for="note-title">Title</label>
+                        <input type="text" id="note-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="note-content">Content</label>
+                        <textarea id="note-content" rows="10"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="note-color">Color</label>
+                        <input type="color" id="note-color" value="#f9d423">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" id="cancel-note" class="secondary-btn">Cancel</button>
+                        <button type="submit" class="primary-btn">Save Note</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                                <div class="settings-section">
+                    <h4>Appearance</h4>
+                    <div class="form-group">
+                        <label for="theme-select">Theme</label>
+                        <select id="theme-select">
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div id="custom-theme-settings" class="hidden">
+                        <div class="form-group">
+                            <label for="custom-css">Custom CSS</label>
+                            <textarea id="custom-css" rows="5" placeholder="Enter your custom CSS here"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="background-image">Background Image URL</label>
+                            <input type="text" id="background-image" placeholder="Enter URL for background image">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Data Management</h4>
+                    <div class="form-actions">
+                        <button id="export-data" class="secondary-btn">Export Data</button>
+                        <button id="import-data" class="secondary-btn">Import Data</button>
+                        <input type="file" id="import-file" accept=".json" class="hidden">
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Calendar Integration</h4>
+                    <div class="form-group">
+                        <label for="calendar-url">Calendar URL (iCal)</label>
+                        <input type="text" id="calendar-url" placeholder="Enter iCal URL to import">
+                    </div>
+                    <div class="form-actions">
+                        <button id="import-calendar" class="secondary-btn">Import Calendar</button>
+                        <button id="export-calendar" class="secondary-btn">Export to iCal</button>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h4>Notifications</h4>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="enable-notifications">
+                            Enable notifications
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="sound-notifications">
+                            Play sound on notifications
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button id="reset-settings" class="danger-btn">Reset to Default</button>
+                    <button id="save-settings" class="primary-btn">Save Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="fullscreen-timer" class="hidden">
+        <div class="fullscreen-timer-content">
+            <div class="fullscreen-task-name" id="fullscreen-task-name">Focus Session</div>
+            <div class="fullscreen-timer-display" id="fullscreen-timer-display">25:00</div>
+            <div class="fullscreen-timer-controls">
+                <button id="fullscreen-pause" class="icon-btn"><i class="fas fa-pause"></i></button>
+                <button id="fullscreen-stop" class="icon-btn"><i class="fas fa-stop"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/tasks.js"></script>
+    <script src="js/timer.js"></script>
+    <script src="js/calendar.js"></script>
+    <script src="js/stats.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
+
+                
