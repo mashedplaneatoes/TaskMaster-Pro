@@ -25,12 +25,14 @@ class CalendarManager {
         this.renderCalendar();
     }
     
-    // Initialize calendar navigation
-    initCalendarNavigation() {
-        const prevBtn = document.getElementById('prev-month');
-        const nextBtn = document.getElementById('next-month');
-        const todayBtn = document.getElementById('today-btn');
-        
+    // Fix the initCalendarNavigation method
+initCalendarNavigation() {
+    // The HTML has 'prev-period' and 'next-period', not 'prev-month' and 'next-month'
+    const prevBtn = document.getElementById('prev-period');
+    const nextBtn = document.getElementById('next-period');
+    const todayBtn = document.getElementById('today-btn'); // This might not exist either
+    
+    if (prevBtn) {
         prevBtn.addEventListener('click', () => {
             if (this.currentView === 'month') {
                 this.currentDate.setMonth(this.currentDate.getMonth() - 1);
@@ -41,7 +43,9 @@ class CalendarManager {
             }
             this.renderCalendar();
         });
-        
+    }
+    
+    if (nextBtn) {
         nextBtn.addEventListener('click', () => {
             if (this.currentView === 'month') {
                 this.currentDate.setMonth(this.currentDate.getMonth() + 1);
@@ -52,12 +56,17 @@ class CalendarManager {
             }
             this.renderCalendar();
         });
-        
+    }
+    
+    // The today-btn might not exist in the HTML, so add a null check
+    if (todayBtn) {
         todayBtn.addEventListener('click', () => {
             this.currentDate = new Date();
             this.renderCalendar();
         });
     }
+}
+
     
     // Initialize calendar view buttons
     initCalendarViewButtons() {
