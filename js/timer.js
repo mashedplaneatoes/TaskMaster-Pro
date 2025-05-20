@@ -110,22 +110,17 @@ class TimerManager {
         pomodoroSessions.addEventListener('change', updateSettings);
     }
     
-    // Initialize fullscreen timer
-    initFullscreenTimer() {
-        const fullscreenBtn = document.getElementById('fullscreen-timer-btn');
-        const fullscreenTimer = document.getElementById('fullscreen-timer');
-        const fullscreenPause = document.getElementById('fullscreen-pause');
-        const fullscreenStop = document.getElementById('fullscreen-stop');
-        
-        fullscreenBtn.addEventListener('click', () => {
-            if (this.timerState === 'stopped') {
-                this.startTimer();
-            }
-            
-            fullscreenTimer.classList.remove('hidden');
-            this.updateFullscreenDisplay();
-        });
-        
+    // Fix the initFullscreenTimer method
+initFullscreenTimer() {
+    // The HTML doesn't have a 'fullscreen-timer-btn' element
+    // Instead, we should use an existing button or add null checks
+    
+    const fullscreenTimer = document.getElementById('fullscreen-timer');
+    const fullscreenPause = document.getElementById('fullscreen-pause');
+    const fullscreenStop = document.getElementById('fullscreen-stop');
+    
+    // Add null checks
+    if (fullscreenTimer && fullscreenPause && fullscreenStop) {
         fullscreenPause.addEventListener('click', () => {
             if (this.timerState === 'running') {
                 this.pauseTimer();
@@ -148,6 +143,25 @@ class TimerManager {
             }
         });
     }
+    
+    // We need to add a button to enter fullscreen mode
+    // Let's check if there's a start-timer button we can use
+    const startTimerBtn = document.getElementById('start-timer');
+    if (startTimerBtn) {
+        startTimerBtn.addEventListener('dblclick', () => {
+            if (this.timerState === 'stopped') {
+                this.startTimer();
+            }
+            
+            const fullscreenTimer = document.getElementById('fullscreen-timer');
+            if (fullscreenTimer) {
+                fullscreenTimer.classList.remove('hidden');
+                this.updateFullscreenDisplay();
+            }
+        });
+    }
+}
+
     
     // Set timer mode (pomodoro, stopwatch, countdown)
     setTimerMode(mode) {
