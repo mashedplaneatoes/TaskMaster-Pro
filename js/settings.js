@@ -142,20 +142,26 @@ initSettingsForm() {
 }
 
     
-    // Initialize theme toggle
-    initThemeToggle() {
-        const themeToggle = document.getElementById('theme-toggle');
-        
+    // Fix the initThemeToggle method
+initThemeToggle() {
+    const themeToggle = document.getElementById('theme-toggle');
+    
+    // Add null check
+    if (themeToggle) {
         themeToggle.addEventListener('click', () => {
             this.settings.theme = this.settings.theme === 'light' ? 'dark' : 'light';
             utils.saveToLocalStorage('settings', this.settings);
             this.applyTheme();
             
             // Update settings form
-            document.getElementById('theme-select').value = this.settings.theme;
+            const themeSelect = document.getElementById('theme-select');
+            if (themeSelect) {
+                themeSelect.value = this.settings.theme;
+            }
         });
     }
-    
+}
+
     // Initialize sidebar toggle
     initSidebarToggle() {
         const sidebarToggle = document.getElementById('sidebar-toggle');
