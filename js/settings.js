@@ -32,32 +32,54 @@ class SettingsManager {
         this.applySettings();
     }
     
-    // Initialize settings form
-    initSettingsForm() {
-        const settingsForm = document.getElementById('settings-form');
-        const resetSettingsBtn = document.getElementById('reset-settings');
-        
-        // Set initial form values
-        document.getElementById('theme-select').value = this.settings.theme;
-        document.getElementById('notifications-enabled').checked = this.settings.notificationsEnabled;
-        document.getElementById('sound-enabled').checked = this.settings.soundEnabled;
-        document.getElementById('auto-start-breaks').checked = this.settings.autoStartBreaks;
-        document.getElementById('default-view').value = this.settings.defaultView;
-        document.getElementById('default-task-sort').value = this.settings.defaultTaskSort;
-        document.getElementById('default-task-filter').value = this.settings.defaultTaskFilter;
-        
-        // Handle form submission
+    // Fix the initSettingsForm method
+initSettingsForm() {
+    // The HTML might not have these elements, so add null checks
+    const settingsForm = document.getElementById('settings-form');
+    const resetSettingsBtn = document.getElementById('reset-settings');
+    
+    // Set initial form values if the elements exist
+    const themeSelect = document.getElementById('theme-select');
+    if (themeSelect) {
+        themeSelect.value = this.settings.theme;
+    }
+    
+    const notificationsEnabled = document.getElementById('enable-notifications');
+    if (notificationsEnabled) {
+        notificationsEnabled.checked = this.settings.notificationsEnabled;
+    }
+    
+    const soundEnabled = document.getElementById('sound-notifications');
+    if (soundEnabled) {
+        soundEnabled.checked = this.settings.soundEnabled;
+    }
+    
+    const autoStartBreaks = document.getElementById('auto-start-breaks');
+    if (autoStartBreaks) {
+        autoStartBreaks.checked = this.settings.autoStartBreaks;
+    }
+    
+    // Handle form submission if the form exists
+    if (settingsForm) {
         settingsForm.addEventListener('submit', (e) => {
             e.preventDefault();
             
-            // Get form values
-            this.settings.theme = document.getElementById('theme-select').value;
-            this.settings.notificationsEnabled = document.getElementById('notifications-enabled').checked;
-            this.settings.soundEnabled = document.getElementById('sound-enabled').checked;
-            this.settings.autoStartBreaks = document.getElementById('auto-start-breaks').checked;
-            this.settings.defaultView = document.getElementById('default-view').value;
-            this.settings.defaultTaskSort = document.getElementById('default-task-sort').value;
-            this.settings.defaultTaskFilter = document.getElementById('default-task-filter').value;
+            // Get form values with null checks
+            if (themeSelect) {
+                this.settings.theme = themeSelect.value;
+            }
+            
+            if (notificationsEnabled) {
+                this.settings.notificationsEnabled = notificationsEnabled.checked;
+            }
+            
+            if (soundEnabled) {
+                this.settings.soundEnabled = soundEnabled.checked;
+            }
+            
+            if (autoStartBreaks) {
+                this.settings.autoStartBreaks = autoStartBreaks.checked;
+            }
             
             // Save settings
             utils.saveToLocalStorage('settings', this.settings);
@@ -66,10 +88,14 @@ class SettingsManager {
             this.applySettings();
             
             // Show success message
-            utils.showToast('Settings saved successfully');
+            if (window.utils && window.utils.showToast) {
+                window.utils.showToast('Settings saved successfully');
+            }
         });
-        
-        // Handle reset settings
+    }
+    
+    // Handle reset settings if the button exists
+    if (resetSettingsBtn) {
         resetSettingsBtn.addEventListener('click', () => {
             if (confirm('Are you sure you want to reset all settings to default?')) {
                 this.settings = {
@@ -86,23 +112,35 @@ class SettingsManager {
                 // Save settings
                 utils.saveToLocalStorage('settings', this.settings);
                 
-                // Update form values
-                document.getElementById('theme-select').value = this.settings.theme;
-                document.getElementById('notifications-enabled').checked = this.settings.notificationsEnabled;
-                document.getElementById('sound-enabled').checked = this.settings.soundEnabled;
-                document.getElementById('auto-start-breaks').checked = this.settings.autoStartBreaks;
-                document.getElementById('default-view').value = this.settings.defaultView;
-                document.getElementById('default-task-sort').value = this.settings.defaultTaskSort;
-                document.getElementById('default-task-filter').value = this.settings.defaultTaskFilter;
+                // Update form values with null checks
+                if (themeSelect) {
+                    themeSelect.value = this.settings.theme;
+                }
+                
+                if (notificationsEnabled) {
+                    notificationsEnabled.checked = this.settings.notificationsEnabled;
+                }
+                
+                if (soundEnabled) {
+                    soundEnabled.checked = this.settings.soundEnabled;
+                }
+                
+                if (autoStartBreaks) {
+                    autoStartBreaks.checked = this.settings.autoStartBreaks;
+                }
                 
                 // Apply settings
                 this.applySettings();
                 
                 // Show success message
-                utils.showToast('Settings reset to default');
+                if (window.utils && window.utils.showToast) {
+                    window.utils.showToast('Settings reset to default');
+                }
             }
         });
     }
+}
+
     
     // Initialize theme toggle
     initThemeToggle() {
@@ -204,6 +242,5 @@ class SettingsManager {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    window.settingsManager = new SettingsManager();
-});
+// Initialize settings manager when DOM is loaded
+window.settingsManager = new SettingsManager();
