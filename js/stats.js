@@ -25,137 +25,155 @@ class StatsManager {
             });
         });
     }
-    
     // Initialize task statistics
-    initTaskStats() {
-        // Get task data
-        const tasks = window.taskManager.getAllTasks();
-        
-        // Calculate task stats
-        const totalTasks = tasks.length;
-        const completedTasks = tasks.filter(task => task.status === 'completed').length;
-        const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-        
-        // Update task stats in UI
-        document.getElementById('stats-total-tasks').textContent = totalTasks;
-        document.getElementById('stats-completed-tasks').textContent = completedTasks;
-        document.getElementById('stats-completion-rate').textContent = `${completionRate}%`;
-        
-        // Create task status chart
+initTaskStats() {
+    // Get task data - add null check for taskManager
+    const tasks = window.taskManager ? window.taskManager.getAllTasks() : [];
+    
+    // Calculate task stats
+    const totalTasks = tasks.length;
+    const completedTasks = tasks.filter(task => task.status === 'completed').length;
+    const completionRate = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+    
+    // Update task stats in UI - add null checks
+    const statsTotal = document.getElementById('stats-total-tasks');
+    const statsCompleted = document.getElementById('stats-completed-tasks');
+    const statsRate = document.getElementById('stats-completion-rate');
+    
+    if (statsTotal) statsTotal.textContent = totalTasks;
+    if (statsCompleted) statsCompleted.textContent = completedTasks;
+    if (statsRate) statsRate.textContent = `${completionRate}%`;
+    
+    // Create charts - only if the elements exist
+    const statusChartEl = document.getElementById('task-status-chart');
+    if (statusChartEl) {
         this.createTaskStatusChart();
-        
-        // Create task priority chart
+    }
+    
+    const priorityChartEl = document.getElementById('task-priority-chart');
+    if (priorityChartEl) {
         this.createTaskPriorityChart();
     }
+}
+
+// Create task status chart
+createTaskStatusChart() {
+    // Get task data - add null check for taskManager
+    const tasks = window.taskManager ? window.taskManager.getAllTasks() : [];
     
-    // Create task status chart
-    createTaskStatusChart() {
-        const tasks = window.taskManager.getAllTasks();
-        
-        // Count tasks by status
-        const statusCounts = {
-            'todo': 0,
-            'in-progress': 0,
-            'review': 0,
-            'completed': 0
-        };
-        
-        tasks.forEach(task => {
-            statusCounts[task.status] = (statusCounts[task.status] || 0) + 1;
-        });
-        
-        // Create chart
-        const ctx = document.getElementById('task-status-chart').getContext('2d');
-        
-        if (this.taskStatusChart) {
-            this.taskStatusChart.destroy();
+    // Count tasks by status
+    const statusCounts = {
+        'todo': 0,
+        'in-progress': 0,
+        'review': 0,
+        'completed': 0
+    };
+    
+    tasks.forEach(task => {
+        statusCounts[task.status] = (statusCounts[task.status] || 0) + 1;
+    });
+    
+    // Create chart - add null check
+    const chartEl = document.getElementById('task-status-chart');
+    if (!chartEl) return;
+    
+    const ctx = chartEl.getContext('2d');
+    
+    if (this.taskStatusChart) {
+        this.taskStatusChart.destroy();
+    }
+    
+    this.taskStatusChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['To Do', 'In Progress', 'Review', 'Completed'],
+            datasets: [{
+                data: [
+                    statusCounts['todo'],
+                    statusCounts['in-progress'],
+                    statusCounts['review'],
+                    statusCounts['completed']
+                ],
+                backgroundColor: [
+                    '#4a90e2',
+                    '#f5a623',
+                    '#9013fe',
+                    '#50e3c2'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
         }
-        
-        this.taskStatusChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['To Do', 'In Progress', 'Review', 'Completed'],
-                datasets: [{
-                    data: [
-                        statusCounts['todo'],
-                        statusCounts['in-progress'],
-                        statusCounts['review'],
-                        statusCounts['completed']
-                    ],
-                    backgroundColor: [
-                        '#4a90e2',
-                        '#f5a623',
-                        '#9013fe',
-                        '#50e3c2'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+    });
+}
+
+// Create task priority chart
+createTaskPriorityChart() {
+    // Get task data - add null check for taskManager
+    const tasks = window.taskManager ? window.taskManager.getAllTasks() : [];
+    
+    // Count tasks by priority
+    const priorityCounts = {
+        'high': 0,
+        'medium': 0,
+        'low': 0
+    };
+    
+    tasks.forEach(task => {
+        priorityCounts[task.priority] = (priorityCounts[task.priority] || 0) + 1;
+    });
+    
+    // Create chart - add null check
+    const chartEl = document.getElementById('task-priority-chart');
+    if (!chartEl) return;
+    
+    const ctx = chartEl.getContext('2d');
+    
+    if (this.taskPriorityChart) {
+        this.taskPriorityChart.destroy();
+    }
+    
+    this.taskPriorityChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['High', 'Medium', 'Low'],
+            datasets: [{
+                label: 'Tasks by Priority',
+                data: [
+                    priorityCounts['high'],
+                    priorityCounts['medium'],
+                    priorityCounts['low']
+                ],
+                backgroundColor: [
+                    '#d0021b',
+                    '#f5a623',
+                    '#7ed321'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
                     }
                 }
             }
-        });
-    }
-    
-    // Create task priority chart
-    createTaskPriorityChart() {
-        const tasks = window.taskManager.getAllTasks();
-        
-        // Count tasks by priority
-        const priorityCounts = {
-            'high': 0,
-            'medium': 0,
-            'low': 0
-        };
-        
-        tasks.forEach(task => {
-            priorityCounts[task.priority] = (priorityCounts[task.priority] || 0) + 1;
-        });
-        
-        // Create chart
-        const ctx = document.getElementById('task-priority-chart').getContext('2d');
-        
-        if (this.taskPriorityChart) {
-            this.taskPriorityChart.destroy();
         }
-        
-        this.taskPriorityChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['High', 'Medium', 'Low'],
-                datasets: [{
-                    label: 'Tasks by Priority',
-                    data: [
-                        priorityCounts['high'],
-                        priorityCounts['medium'],
-                        priorityCounts['low']
-                    ],
-                    backgroundColor: [
-                        '#d0021b',
-                        '#f5a623',
-                        '#7ed321'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            precision: 0
-                        }
-                    }
-                }
-            }
-        });
-    }
+    });
+}
+
+    
     
     // Initialize focus time statistics
     initFocusTimeStats() {
@@ -530,10 +548,8 @@ class StatsManager {
     }
 }
 
-// In stats.js
-document.addEventListener('DOMContentLoaded', function() {
-    window.statsManager = new StatsManager();
-});
+// Initialize stats manager when DOM is loaded
+window.statsManager = new StatsManager();
 
 
         
